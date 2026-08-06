@@ -19,7 +19,7 @@ async def start_command(message: Message, bot: Bot):
 
 @router.message(Command('help'))
 async def help_command(message: Message):
-    await message.answer('/start - старт бота\n/help - помощник\n/meme - фото мема\n/time - текущая дата и время\n/random - случайное число от 1 до 100\n/help - случайная шутка\nИ если вы напишите "привет" то бот вам ответит "Hello"')
+    await message.answer('/start - старт бота\n/help - помощник\n/meme - фото мема\n/time - текущая дата и время\n/random - случайное число от 1 до 100\n/joke - случайная шутка\nИ если вы напишите "привет" то бот вам ответит "Hello"')
 
 @router.message(F.text == 'привет')
 async def hello_command(message: Message):
