@@ -27,7 +27,7 @@ async def hello_command(message: Message):
 
 @router.message(Command('meme'))
 async def meme_command(message: Message, bot: Bot):
-    photo = FSInputFile('/home/alymbek/Desktop/group_68_2/media/photo_5447215620777777648_y.jpg')
+    photo = FSInputFile('media/meme.jpg')
     await bot.send_photo(chat_id=message.chat.id, photo=photo)
 
 @router.message(Command('time'))
