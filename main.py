@@ -1,63 +1,21 @@
-from decouple import config
-from datetime import datetime
-import random
-from aiogram import Bot, Dispatcher, Router, F
-import asyncio
-from aiogram.filters import Command
-from aiogram.types import Message, FSInputFile
 import logging
+from config import bot, dp, Admin
+import asyncio
+from handlers import commands, echo, fsm
 
-token = config('BOT_TOKEN')
+async def on_startup():
+    for admin_id in Admin:
+        await bot.send_message(chat_id=admin_id, text='Бот включен!')
 
-router = Router()
+dp.include_router(commands.router_commands)
+dp.include_router(fsm.router_fsm)
 
-@router.message(Command('start'))
-async def start_command(message: Message, bot: Bot):
-    await message.answer('Привет. Напиши своё имя ')
+# Эхо 
+dp.include_router(echo.router_echo)
 
-    await bot.send_message(chat_id=message.chat.id, text='Приветствую!')
+dp.startup.register(on_startup)
 
-@router.message(Command('help'))
-async def help_command(message: Message):
-    await message.answer('/start - старт бота\n/help - помощник\n/meme - фото мема\n/time - текущая дата и время\n/random - случайное число от 1 до 100\n/joke - случайная шутка\nИ если вы напишите "привет" то бот вам ответит "Hello"')
-
-@router.message(F.text == 'привет')
-async def hello_command(message: Message):
-    await message.answer('Hello')
-
-@router.message(Command('meme'))
-async def meme_command(message: Message, bot: Bot):
-    photo = FSInputFile('media/meme.jpg')
-    await bot.send_photo(chat_id=message.chat.id, photo=photo)
-
-@router.message(Command('time'))
-async def time_command(message: Message):
-    dt = datetime.now()
-    text = f'Сейчас: {dt.day}.{dt.month}.{dt.year} {dt.hour}:{dt.minute}'
-    await message.answer(text)
-
-@router.message(Command('random'))
-async def random_command(message: Message):
-    await message.answer(f'Твоё случайное число: {random.randint(1, 100)}')
-
-@router.message(Command('joke'))
-async def random_command(message: Message):
-    jokes = ['Как заставить змею плакать? — Отобрать у нее погремушку.', 'Зачем птицы летают в теплые края? — Потому что идти пешком долго.', 'Британские ученые выяснили: если долго смотреть на кота, он начнет смотреть в ответ… с осуждением.', 'Почему крокодил не пишет стихи? — Слез хватает, а рифм нет.', 'Почему рыбы живут в соленой воде? — Потому что перченая вода заставляет их чихать.']
-    await message.answer(random.choice(jokes))
-
-@router.message(F.text)
-async def echo(message: Message):
-    await message.answer(f'Такой команды нет - {message.text}')
-
-async def main():
-    logging.basicConfig(level=logging.INFO)
-
-    bot = Bot(token=token)
-    dp = Dispatcher()
-
-    dp.include_router(router=router)
-
-    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    logging.basicConfig(level=logging.INFO)
+    asyncio.run(dp.start_polling(bot))
