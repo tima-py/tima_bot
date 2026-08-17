@@ -18,13 +18,7 @@ async def start_command(message: Message, bot):
 
 @router_commands.message(Command('help'))
 async def help_command(message: Message):
-    await message.answer('/start - старт бота \n'
-    '/help - помощник\n'
-    '/mem - мем\n'
-    '/add_product - добавить продукт\n'
-    '/add_film - добавить фильм\n'
-    '/products - просмотреть все продукты\n'
-    '/films - просмотреть все фильмы')
+    await message.answer('/start - старт бота \n/help - помощник ')
 
 
 @router_commands.message(F.text == 'привет')
@@ -52,8 +46,8 @@ async def get_products(message: Message):
         await message.answer('В базе товаров нет!')
         return
     else:
-        for name, price, description in products:
-            await message.answer(f'Название - {name}\nЦена - {price}\nОписание - {description}')
+        for name, price, category, description, product_id  in products:
+            await message.answer(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}')
 
 @router_commands.message(Command('films'))
 async def get_films(message: Message):
@@ -63,5 +57,11 @@ async def get_films(message: Message):
         await message.answer('В базе фильмов нет!')
         return
     else:
-        for name_film, genre, review in films:
-            await message.answer(f'Название - {name_film}\nЦена - {genre}\nОписание - {review}')
+        for name_film, genre, film_id, description, review in films:
+            await message.answer(f"""
+            Название - {name_film}
+Жанр - {genre}
+Описание - {description}
+Оценка - {review}/10
+Артикул - {film_id}
+                """)           
