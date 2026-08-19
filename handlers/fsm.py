@@ -16,6 +16,7 @@ class AddProduct(StatesGroup):
     description = State()
     product_id = State() #артикул
     category = State()
+    photo = State()
 
 
 @router_fsm.message(Command('add_product'))
@@ -52,19 +53,36 @@ async def add_product_id(message: Message, state: FSMContext):
 
 @router_fsm.message(AddProduct.category)
 async def add_category(message: Message, state: FSMContext):
+    await state.update_data(category=message.text)
+    await message.answer('Отправьте фото товара')
+    await state.set_state(AddProduct.photo)
 
-    data = await state.update_data(category=message.text)
+@router_fsm.message(AddProduct.photo, F.photo)
+async def add_photo(message: Message, state: FSMContext):
+    await state.update_data(photo=message.photo[-1].file_id)
+    data = await state.get_data()
 
-    await message.answer(
-        f"Товар добавлен!\n"
+    # await message.answer(
+    #     f"Товар добавлен!\n"
+    #     f"Название товара - {data['name']}\n"
+    #     f"Цена: {data['price']}\n"
+    #     f"Описание: {data['description']}\n"
+    #     f"Артикул: {data['product_id']}\n"
+    #     f"Категория: {data['category']}"
+    # )
+
+    await message.answer_photo(photo=data['photo'], caption=(f"Товар добавлен!\n"
         f"Название товара - {data['name']}\n"
         f"Цена: {data['price']}\n"
         f"Описание: {data['description']}\n"
         f"Артикул: {data['product_id']}\n"
-        f"Категория: {data['category']}"
+        f"Категория: {data['category']}\n"
+        f"Категория: {data['category']}")
     )
 
-    await main_db.add_product_db(name_product=data['name'], price=data['price'], product_id=data['product_id'])
+    # await main_db.add_product_db(name_product=data['name'], price=data['price'], product_id=data['product_id'])
+    await main_db.add_product_db(name_product=data['name'], price=data['price'], product_id=data['product_id'], photo_id=data['photo'])
+
     await main_db.add_product_detail_db(product_id=data['product_id'], category=data['category'], description=data['description'])
 
     await state.clear()

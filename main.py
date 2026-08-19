@@ -4,9 +4,22 @@ import asyncio
 from handlers import commands, echo, fsm
 from db import main_db
 
+from aiogram.types import BotCommand
+
+async def set_commands():
+    commands = [
+        BotCommand(command='start', description='Старт бота'),
+        BotCommand(command='help', description='Помощь'),
+        BotCommand(command='mem', description='мем'),
+        BotCommand(command='products', description='Получить товары из БД'),
+        BotCommand(command='add_product', description='Записать товар'),
+    ]
+    await bot.set_my_commands(commands)
+
 async def on_startup():
     await main_db.init_db()
     await main_db.create_table()
+    await set_commands()
     for admin_id in Admin:
         await bot.send_message(chat_id=admin_id, text='Бот включен!')
 

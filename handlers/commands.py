@@ -46,9 +46,10 @@ async def get_products(message: Message):
         await message.answer('В базе товаров нет!')
         return
     else:
-        for name, price, category, description, product_id  in products:
-            await message.answer(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}')
-
+        for name, price, category, description, product_id, photo_id  in products:
+            # await message.answer(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}')
+            await message.answer_photo(photo=photo_id,
+                caption=(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}'))
 @router_commands.message(Command('films'))
 async def get_films(message: Message):
     films = await main_db.get_film_db()
