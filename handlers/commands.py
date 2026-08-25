@@ -3,7 +3,7 @@ from aiogram import Router, F
 from aiogram.types import Message, FSInputFile, CallbackQuery
 from config import bot
 
-from handlers.buttons import main_buttons, main_builder, menu_inline
+from handlers.buttons import main_buttons, main_builder, menu_inline, product_actions
 
 from db import main_db
 
@@ -49,7 +49,8 @@ async def get_products(message: Message):
         for name, price, category, description, product_id, photo_id  in products:
             # await message.answer(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}')
             await message.answer_photo(photo=photo_id,
-                caption=(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}'))
+                caption=(f'Название - {name}\nЦена - {price}\nОписание - {description}\nКатегория - {category}\nАртикул - {product_id}'), 
+                reply_markup=product_actions(product_id=product_id))
 @router_commands.message(Command('films'))
 async def get_films(message: Message):
     films = await main_db.get_film_db()

@@ -1,3 +1,10 @@
+# Если удалить запись только из первой таблицы, а вторую не трогать, 
+# то он удалится из /products из-за INNER JOIN 
+# но вторая таблица останется в базе потому что мы её не трогали
+
+
+
+
 # Если добавить запись только в первую таблицу а во вторую не добавлять 
 # то запись не появится из-за того что там INNER JOIN 
 # а он показывает только те строки, где совпадение есть в обеих таблицах.
@@ -56,3 +63,17 @@ create_table_products_detail = """
     )
 """
 insert_product_detail = 'INSERT INTO products_detail (description, product_id, category) VALUES (?, ?, ?)'
+
+update_product = "UPDATE {table} SET {field} = ? WHERE product_id = ?"
+
+# Товар лежит в двух таблицах — удаляем из обеих
+delete_product = "DELETE FROM products WHERE product_id = ?"
+delete_product_detail = "DELETE FROM products_detail WHERE product_id = ?"
+
+delete_all_products_detail = """
+DELETE FROM products_detail
+"""
+
+delete_all_products = """
+DELETE FROM products
+"""

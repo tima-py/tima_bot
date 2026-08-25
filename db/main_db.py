@@ -52,6 +52,32 @@ async def get_product_db():
         products = await cursor.fetchall()
     return products
 
+async def update_product_db(field, value, product_id):
+    if field in ('name_product', "price"):
+        table = 'products'
+    elif field in ('description', 'category'):
+        table = 'products_detail'
+    else: 
+        return
+
+    query = queries.update_product.format(table=table, field=field)
+
+    async with aiosqlite.connect(path_db) as conn:
+        await conn.execute(query, (value, product_id))
+        await conn.commit()
+
+async def delete_product_db(product_id):
+    async with aiosqlite.connect(path_db) as conn:
+        await conn.execute(queries.delete_product, (product_id, ))
+        await conn.execute(queries.delete_product_detail, (product_id, ))
+        await conn.commit()
+
+async def delete_all_products_db():
+    async with aiosqlite.connect(path_db) as conn:
+        await conn.execute(queries.delete_all_products_detail)
+        await conn.execute(queries.delete_all_products)
+        await conn.commit()
+
 # import sqlite3
 # from db import queries
 
